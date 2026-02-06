@@ -27,13 +27,23 @@ cd NSDDD_v3_installer
 
 **2. Install Jupyter (if not already installed):**
 
+Minimal option (recommended):
 ```bash
-pip install jupyter jupyterlab
+pip install notebook
+```
+
+Or with JupyterLab (larger but better interface):
+```bash
+pip install jupyterlab
 ```
 
 **3. Open the installer notebook:**
 
 ```bash
+# If you installed notebook:
+jupyter notebook INSTALL_NSDDD_v3.ipynb
+
+# If you installed jupyterlab:
 jupyter lab INSTALL_NSDDD_v3.ipynb
 ```
 

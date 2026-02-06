@@ -12,8 +12,8 @@ scikit-learn>=1.2.0
 networkx>=3.0
 
 # Jupyter and interactive features
-jupyter>=1.0.0
-jupyterlab>=3.5.0
+# Note: Install either 'notebook' (minimal) or 'jupyterlab' (full-featured)
+# pip install notebook  OR  pip install jupyterlab
 ipywidgets>=8.0.0
 ipykernel>=6.20.0
 
