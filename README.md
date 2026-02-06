@@ -21,7 +21,7 @@ NSDDD v3 is a comprehensive corpus of **660 national security strategy documents
 **1. Clone this repository:**
 
 ```bash
-git clone https://github.com/[username]/NSDDD_v3_installer.git
+git clone https://github.com/andrewneal78/NSDDD_v3_installer.git
 cd NSDDD_v3_installer
 ```
 
