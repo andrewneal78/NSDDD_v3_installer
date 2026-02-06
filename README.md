@@ -84,65 +84,73 @@ All searches run **locally** on your computer using pre-computed embeddings. No 
 
 ### Example Uses
 
-All examples use Python code. See `GETTING_STARTED.ipynb` for complete working examples.
+See `GETTING_STARTED.ipynb` for complete working examples with detailed explanations.
 
-**Semantic search for cyber threats**:
+**1. Load the dataset**:
 ```python
+import json
+import numpy as np
+from sentence_transformers import SentenceTransformer
 from scipy.spatial.distance import cosine
 
+# Load pre-computed embeddings and metadata
+with open('model/segment_encodings.json') as f:
+    segment_encodings = np.array(json.load(f))  # 726K vectors
+
+with open('model/encoded_segments.json') as f:
+    encoded_segments = json.load(f)  # Segment IDs
+
+with open('model/segments_dict.json') as f:
+    segments_dict = json.load(f)  # Full text
+
+with open('model/documents_dict.json') as f:
+    documents_dict = json.load(f)  # Document metadata
+
+encoder = SentenceTransformer('sentence-transformers/all-mpnet-base-v2')
+```
+
+**2. Run a semantic search**:
+```python
+# Search for cyber threat discussions
 query = 'cyber threats to critical infrastructure'
-query_vector = encoder.encode([query])[0]
+query_embedding = encoder.encode([query])[0]
 
-results = []
-for i, segment_vector in enumerate(segment_encodings):
-    similarity = 1 - cosine(query_vector, segment_vector)
-    if similarity >= 0.7:  # Similarity threshold
-        results.append((encoded_segments[i], similarity))
+# Compute similarities
+similarities = []
+for encoding in segment_encodings:
+    sim = 1 - cosine(query_embedding, encoding)
+    similarities.append(sim)
 
-# Returns: 45 matching segments from 12 countries
+# Get top results above threshold
+threshold = 0.7
+top_indices = [i for i, sim in enumerate(similarities) if sim >= threshold]
+# Returns: ~45 matching segments from 12 countries
 ```
 
-**Filter by country and year**:
+**3. Filter by country or year**:
 ```python
-import pandas as pd
+# Filter USA documents from 2020 onwards
+for idx in top_indices[:10]:
+    segment_id = encoded_segments[idx]
+    doc_id = segment_id.split('/')[0]
+    doc = documents_dict[doc_id]
 
-metadata = pd.read_csv('metadata/document_metadata.csv')
-
-# Find climate security discussions in European documents after 2020
-eu_docs = metadata[(metadata['Region'] == 'Europe') &
-                   (metadata['Year'] >= 2020)]
-
-# Search only within these documents
-filtered_results = [r for r in results
-                   if get_document_id(r[0]) in eu_docs['ID'].values]
+    if doc['country'] == 'United States' and doc['year'] >= 2020:
+        text = segments_dict[segment_id]
+        print(f"{doc['year']}: {text[:100]}...")
 ```
 
-**Cluster similar segments**:
+**4. Compare across countries**:
 ```python
-import networkx as nx
+# Compare how different countries frame climate threats
+query = 'climate change as security threat'
+query_embedding = encoder.encode([query])[0]
 
-# Build similarity graph
-G = nx.Graph()
-for i, (seg1, score1) in enumerate(results):
-    for j, (seg2, score2) in enumerate(results[i+1:], i+1):
-        if cosine_similarity(seg1, seg2) >= 0.78:
-            G.add_edge(i, j)
-
-# Find clusters
-clusters = list(nx.connected_components(G))
-# Returns: 12 distinct threat framings across documents
-```
-
-**Extract and analyse segments**:
-```python
-# Get full text for segments
-for segment_id, similarity in results[:10]:
-    doc_id, seg_num = segment_id.split('/')
-    text = segments_dict[doc_id][int(seg_num)]['text']
-    country = documents_dict[doc_id]['country']
-    year = documents_dict[doc_id]['year']
-
-    print(f'{country} ({year}): {text[:100]}...')
+for country in ['United States', 'United Kingdom', 'China']:
+    # Find best match from this country's documents
+    country_docs = [d for d, meta in documents_dict.items()
+                   if meta['country'] == country]
+    # ... compute similarities and display top results
 ```
 
 ## Installation Time
