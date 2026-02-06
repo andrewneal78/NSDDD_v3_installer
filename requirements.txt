@@ -1,0 +1,29 @@
+# NSDDD v3 Installer Requirements
+# All dependencies required for semantic search and analysis
+
+# Core semantic search and machine learning
+sentence-transformers>=2.2.0
+torch>=2.0.0
+numpy>=1.24.0
+scipy>=1.10.0
+scikit-learn>=1.2.0
+
+# Graph algorithms (optional, for result clustering)
+networkx>=3.0
+
+# Jupyter and interactive features
+jupyter>=1.0.0
+jupyterlab>=3.5.0
+ipywidgets>=8.0.0
+ipykernel>=6.20.0
+
+# Utilities
+tqdm>=4.65.0           # Progress bars
+requests>=2.31.0       # HTTP requests for DataShare API
+psutil>=5.9.0          # System monitoring
+
+# Optional: Visualisation and analysis
+# (Uncomment if needed for analysis)
+# matplotlib>=3.7.0
+# seaborn>=0.12.0
+# pandas>=1.5.0
