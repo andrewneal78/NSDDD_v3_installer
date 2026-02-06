@@ -84,28 +84,65 @@ All searches run **locally** on your computer using pre-computed embeddings. No 
 
 ### Example Uses
 
-**Semantic search**:
+All examples use Python code. See `GETTING_STARTED.ipynb` for complete working examples.
+
+**Semantic search for cyber threats**:
 ```python
-"Find all mentions of cyber threats to critical infrastructure"
-→ Returns 45 matching segments from 12 countries
+from scipy.spatial.distance import cosine
+
+query = 'cyber threats to critical infrastructure'
+query_vector = encoder.encode([query])[0]
+
+results = []
+for i, segment_vector in enumerate(segment_encodings):
+    similarity = 1 - cosine(query_vector, segment_vector)
+    if similarity >= 0.7:  # Similarity threshold
+        results.append((encoded_segments[i], similarity))
+
+# Returns: 45 matching segments from 12 countries
 ```
 
-**Topic analysis**:
+**Filter by country and year**:
 ```python
-"Which countries identify climate change as a security threat?"
-→ Shows temporal patterns and cross-national trends
+import pandas as pd
+
+metadata = pd.read_csv('metadata/document_metadata.csv')
+
+# Find climate security discussions in European documents after 2020
+eu_docs = metadata[(metadata['Region'] == 'Europe') &
+                   (metadata['Year'] >= 2020)]
+
+# Search only within these documents
+filtered_results = [r for r in results
+                   if get_document_id(r[0]) in eu_docs['ID'].values]
 ```
 
-**Document exploration**:
+**Cluster similar segments**:
 ```python
-"Extract all references to supply chain security"
-→ Provides segments, countries, years, and similarity scores
+import networkx as nx
+
+# Build similarity graph
+G = nx.Graph()
+for i, (seg1, score1) in enumerate(results):
+    for j, (seg2, score2) in enumerate(results[i+1:], i+1):
+        if cosine_similarity(seg1, seg2) >= 0.78:
+            G.add_edge(i, j)
+
+# Find clusters
+clusters = list(nx.connected_components(G))
+# Returns: 12 distinct threat framings across documents
 ```
 
-**Comparative analysis**:
+**Extract and analyse segments**:
 ```python
-"How has terrorism been framed in European vs. Asian security documents?"
-→ Semantic clustering of threat constructions across regions
+# Get full text for segments
+for segment_id, similarity in results[:10]:
+    doc_id, seg_num = segment_id.split('/')
+    text = segments_dict[doc_id][int(seg_num)]['text']
+    country = documents_dict[doc_id]['country']
+    year = documents_dict[doc_id]['year']
+
+    print(f'{country} ({year}): {text[:100]}...')
 ```
 
 ## Installation Time
