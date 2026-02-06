@@ -10,11 +10,11 @@ NSDDD v3 is a comprehensive corpus of **660 national security strategy documents
 
 - Python 3.9 or newer
 - pip (Python package installer)
-- Jupyter Lab or Jupyter Notebook
+- Jupyter Notebook
 - 15 GB free disk space (minimum)
 - 16 GB RAM (recommended)
 
-**Note**: No conda required, no API keys needed.
+**Note**: No conda required, no API keys needed, no Python coding required.
 
 ### Installation (3 steps)
 
@@ -25,26 +25,16 @@ git clone https://github.com/andrewneal78/NSDDD_v3_installer.git
 cd NSDDD_v3_installer
 ```
 
-**2. Install Jupyter (if not already installed):**
+**2. Install Jupyter Notebook (if not already installed):**
 
-Minimal option (recommended):
 ```bash
 pip install notebook
-```
-
-Or with JupyterLab (larger but better interface):
-```bash
-pip install jupyterlab
 ```
 
 **3. Open the installer notebook:**
 
 ```bash
-# If you installed notebook:
 jupyter notebook INSTALL_NSDDD_v3.ipynb
-
-# If you installed jupyterlab:
-jupyter lab INSTALL_NSDDD_v3.ipynb
 ```
 
 Follow the installation steps in the notebook. The installer will:
@@ -60,98 +50,76 @@ Follow the installation steps in the notebook. The installer will:
 
 After installation, you'll have:
 
-- **660 national security documents** from 119 countries (1987–2025)
+- **Interactive search notebook**: Widget-based interface—no coding required
+- **660 national security documents** from 118 countries (1987–2025)
 - **726,307 pre-computed MPNet embeddings** (768-dimensional vectors)
-- **Complete metadata**: Country information, publication years, document types
+- **Complete metadata**: Country information, publication years, document types, organizational memberships
 - **Semantic search capability**: Search for security concepts across all documents locally
-- **Python code examples**: Tutorial notebook with working code
+- **Advanced filtering**: By country, region, organization, income group, democracy status, year
 - **Documentation**: Complete methodology and usage guide
 
 ## System Requirements
 
-| Requirement | Minimum | Recommended |
-|---|---|---|
-| Python | 3.9 | 3.11+ |
-| Disk space | 15 GB | 20 GB |
-| RAM | 8 GB* | 16 GB |
-| Internet | For download | For download only |
+| Requirement | Minimum      | Recommended       |
+| ----------- | ------------ | ----------------- |
+| Python      | 3.9          | 3.11+             |
+| Disk space  | 15 GB        | 20 GB             |
+| RAM         | 8 GB*        | 16 GB             |
+| Internet    | For download | For download only |
 
 *Note: The semantic search model file is 11 GB and requires sufficient RAM to load. A minimum of 16 GB is recommended to avoid memory pressure.
 
 ## What Can You Do With NSDDD v3?
 
-All searches run **locally** on your computer using pre-computed embeddings. No external APIs or internet connection required after installation.
+All searches run **locally** on your computer using pre-computed embeddings. No external APIs, internet connection, or Python coding required after installation.
 
-### Example Uses
+### How It Works
 
-See `GETTING_STARTED.ipynb` for complete working examples with detailed explanations.
+After installation, open the **Document Metadata Search Tool** notebook:
 
-**1. Load the dataset**:
-```python
-import json
-import numpy as np
-from sentence_transformers import SentenceTransformer
-from scipy.spatial.distance import cosine
-
-# Load pre-computed embeddings and metadata
-with open('model/segment_encodings.json') as f:
-    segment_encodings = np.array(json.load(f))  # 726K vectors
-
-with open('model/encoded_segments.json') as f:
-    encoded_segments = json.load(f)  # Segment IDs
-
-with open('model/segments_dict.json') as f:
-    segments_dict = json.load(f)  # Full text
-
-with open('model/documents_dict.json') as f:
-    documents_dict = json.load(f)  # Document metadata
-
-encoder = SentenceTransformer('sentence-transformers/all-mpnet-base-v2')
+```bash
+jupyter notebook document_metadata_search.ipynb
 ```
 
-**2. Run a semantic search**:
-```python
-# Search for cyber threat discussions
-query = 'cyber threats to critical infrastructure'
-query_embedding = encoder.encode([query])[0]
+The notebook provides an **interactive widget interface**:
 
-# Compute similarities
-similarities = []
-for encoding in segment_encodings:
-    sim = 1 - cosine(query_embedding, encoding)
-    similarities.append(sim)
+1. **Run all cells** to load the dataset and launch the search interface
+2. **Enter search queries** in the text box (e.g., 'cyber threats to critical infrastructure')
+3. **Select filters** using dropdown menus:
+   - Countries (single or multiple)
+   - UN Regions (Asia, Europe, Africa, Americas, Oceania)
+   - Organizations (NATO, EU, ASEAN, BRICS, Commonwealth, G7, G20, etc.)
+   - Income groups (High, Upper-middle, Lower-middle, Low)
+   - Democracy status (Free, Partly Free, Not Free)
+   - ODA recipient status
+   - Years (1987–2025)
+4. **Click 'Search'** to find matching document segments
+5. **Review results** with similarity scores, document context, and clustering
+6. **Export results** to CSV for further analysis
 
-# Get top results above threshold
-threshold = 0.7
-top_indices = [i for i, sim in enumerate(similarities) if sim >= threshold]
-# Returns: ~45 matching segments from 12 countries
-```
+### Example Searches
 
-**3. Filter by country or year**:
-```python
-# Filter USA documents from 2020 onwards
-for idx in top_indices[:10]:
-    segment_id = encoded_segments[idx]
-    doc_id = segment_id.split('/')[0]
-    doc = documents_dict[doc_id]
+**Cyber security threats**:
+- Query: `cyber threats to critical infrastructure`
+- Filters: NATO members, 2020–2025
+- Result: ~45 segments showing how NATO countries frame cyber threats
 
-    if doc['country'] == 'United States' and doc['year'] >= 2020:
-        text = segments_dict[segment_id]
-        print(f"{doc['year']}: {text[:100]}...")
-```
+**Climate change and security**:
+- Query: `climate change as national security threat`
+- Filters: Small Island Developing States (SIDS)
+- Result: Segments showing climate threat framing in vulnerable nations
 
-**4. Compare across countries**:
-```python
-# Compare how different countries frame climate threats
-query = 'climate change as security threat'
-query_embedding = encoder.encode([query])[0]
+**Regional comparisons**:
+- Query: `terrorism and non-state actors`
+- Filters: Compare Asia vs Europe
+- Result: Side-by-side comparison of terrorism threat construction
 
-for country in ['United States', 'United Kingdom', 'China']:
-    # Find best match from this country's documents
-    country_docs = [d for d, meta in documents_dict.items()
-                   if meta['country'] == country]
-    # ... compute similarities and display top results
-```
+**Temporal analysis**:
+- Query: `migration and border security`
+- Filters: EU members, compare 2000–2010 vs 2011–2025
+- Result: Evolution of migration security discourse
+
+**No coding required**—just type queries and select filters in the interactive interface.
 
 ## Installation Time
 
@@ -163,15 +131,15 @@ The installer supports resume capability—if interrupted, simply re-run the not
 
 ## Disk Space Breakdown
 
-| Component | Size | Required? |
-|---|---|---|
-| Model files (embeddings + segments) | 8 GB | Yes |
-| Metadata | <1 MB | Yes |
-| Documentation | 20 KB | Yes |
-| Plain text documents | 40 MB | Optional |
-| Sentence-segmented documents | 50 MB | Optional |
-| PDF originals | 6 GB | Optional |
-| Original language documents | 20 MB | Optional |
+| Component                           | Size  | Required? |
+| ----------------------------------- | ----- | --------- |
+| Model files (embeddings + segments) | 8 GB  | Yes       |
+| Metadata                            | <1 MB | Yes       |
+| Documentation                       | 20 KB | Yes       |
+| Plain text documents                | 40 MB | Optional  |
+| Sentence-segmented documents        | 50 MB | Optional  |
+| PDF originals                       | 6 GB  | Optional  |
+| Original language documents         | 20 MB | Optional  |
 
 **Minimum install**: 8.02 GB (semantic search only)
 **With documents**: 8.04–8.05 GB
@@ -213,14 +181,25 @@ Or in text form:
 
 ## Getting Started After Installation
 
-After installation completes, open `GETTING_STARTED.ipynb` for a tutorial covering:
+After installation completes, open the **Document Metadata Search Tool**:
 
-- Loading the data model
-- Running semantic searches
-- Filtering by country, year, and document type
-- Clustering and analysing results
-- Extracting segments for further analysis
-- Example research queries
+```bash
+jupyter notebook document_metadata_search.ipynb
+```
+
+Run all cells in the notebook to:
+
+1. Load the dataset (takes 90–120 seconds for 11 GB embedding file)
+2. Launch the interactive search interface
+3. Start searching with the widget-based interface—no coding required
+
+The interface provides:
+
+- **Text input** for search queries
+- **Dropdown filters** for countries, regions, organizations, income groups, democracy status
+- **Year range** selectors
+- **Search and export buttons**
+- **Results display** with similarity scores and document context
 
 ## Troubleshooting
 
