@@ -149,3 +149,4 @@ documentation/
 # Temporary files
 *.tmp
 *.bak
+.jupyter_ystore.db

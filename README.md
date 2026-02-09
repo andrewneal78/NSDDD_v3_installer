@@ -2,7 +2,7 @@
 
 Official installer for the **National Security Documents Dataset** (NSDDD) version 3.
 
-NSDDD v3 is a comprehensive corpus of **660 national security strategy documents** from **119 countries** spanning **1987–2025**, with **726,307 pre-computed semantic embeddings** (MPNet 768-dimensional vectors) enabling local semantic search without API keys or internet connection.
+NSDDD v3 is a comprehensive corpus of **660 national security strategy documents** from **118 countries** spanning **1987–2025**, with **726,307 pre-computed semantic embeddings** (MPNet 768-dimensional vectors) enabling local semantic search without API keys or internet connection.
 
 ## Quick Start
 
@@ -95,7 +95,10 @@ The notebook provides an **interactive widget interface**:
    - Years (1987–2025)
 4. **Click 'Search'** to find matching document segments
 5. **Review results** with similarity scores, document context, and clustering
-6. **Export results** to CSV for further analysis
+6. **Export results** to CSV with configurable options:
+   - Toggle CSV export on/off (useful for quick exploratory searches)
+   - Enable iterative filenames (adds timestamps to prevent overwriting previous results)
+   - Export includes metadata, similarity scores, document context, and cluster assignments
 
 ### Example Searches
 
@@ -133,21 +136,21 @@ The installer supports resume capability—if interrupted, simply re-run the not
 
 | Component                           | Size  | Required? |
 | ----------------------------------- | ----- | --------- |
-| Model files (embeddings + segments) | 8 GB  | Yes       |
-| Metadata                            | <1 MB | Yes       |
-| Documentation                       | 20 KB | Yes       |
-| Plain text documents                | 40 MB | Optional  |
-| Sentence-segmented documents        | 50 MB | Optional  |
-| PDF originals                       | 6 GB  | Optional  |
-| Original language documents         | 20 MB | Optional  |
+| Model files (embeddings + segments) | 11.5 GB | Yes      |
+| Metadata                            | 80 KB   | Yes      |
+| Documentation files                 | 90 KB   | Yes      |
+| Plain text documents                | 41 MB   | Optional |
+| Sentence-segmented documents        | 44 MB   | Optional |
+| PDF originals                       | 7 GB    | Optional |
+| Original language documents         | 15 MB   | Optional |
 
-**Minimum install**: 8.02 GB (semantic search only)
-**With documents**: 8.04–8.05 GB
-**Complete**: ~15 GB
+**Minimum install**: 11.6 GB (semantic search only)
+**With documents**: 11.7 GB
+**Complete**: ~19 GB
 
 ## Dataset Information
 
-**Coverage**: 660 documents from 119 countries, 1987–2025
+**Coverage**: 660 documents from 118 countries, 1987–2025
 
 **Document types**: National security strategies, defence white papers, strategic reviews
 
@@ -157,27 +160,26 @@ The installer supports resume capability—if interrupted, simply re-run the not
 
 **Encoding model**: sentence-transformers/all-mpnet-base-v2 (768-dimensional)
 
-**DataShare repository**: [Link to be added after publication]
+**DataShare repository**: https://datashare.ed.ac.uk (DOI assigned upon publication)
 
 ## Citation
 
 If you use NSDDD v3 in research, please cite:
 
 ```bibtex
-@dataset{gardner_2025_nsddd_v3,
-  author       = {Gardner, Andrew Neal},
-  title        = {National Security Documents Dataset (NSDDD) Version 3},
-  year         = {2025},
+@dataset{neal_gardner_2026_nsddd_v3,
+  author       = {Neal, Andrew W. and Gardner, Roy B.},
+  title        = {National Security and Defence Documents Dataset (1987-2025) v3.0},
+  year         = {2026},
   publisher    = {Edinburgh DataShare},
-  url          = {https://doi.org/10.7488/ds/[DOI_TO_BE_ADDED]},
   institution  = {University of Edinburgh},
-  note         = {660 national security strategy documents from 119 countries, 1987–2025, with MPNet embeddings}
+  note         = {660 national security strategy documents from 118 countries, 1987-2025, with MPNet embeddings. DOI available at https://datashare.ed.ac.uk}
 }
 ```
 
 Or in text form:
 
-> Gardner, A. N. (2025). National Security Documents Dataset (NSDDD) Version 3. University of Edinburgh. https://doi.org/10.7488/ds/[DOI_TO_BE_ADDED]
+> Neal, A. W., & Gardner, R. B. (2026). National Security and Defence Documents Dataset (1987-2025) v3.0. University of Edinburgh. Edinburgh DataShare. https://datashare.ed.ac.uk
 
 ## Getting Started After Installation
 
@@ -229,8 +231,8 @@ The interface provides:
 ### Other issues?
 
 - Check the documentation included in the installation
-- See `SEMANTIC_SEARCH_GUIDE.md` for comprehensive help
-- Report issues on GitHub: [link to issues]
+- See `WHATS_NEW_IN_NSDDD_V3.md` for comprehensive documentation
+- Report issues on GitHub: https://github.com/andrewneal78/NSDDD_v3_installer/issues
 
 ## License
 
@@ -244,26 +246,28 @@ See `LICENSE.txt` (included after installation) for full details.
 
 For questions, issues, or feedback:
 
-- **GitHub Issues**: [Report bugs or request features]
-- **Email**: [Contact information]
+- **GitHub Issues**: https://github.com/andrewneal78/NSDDD_v3_installer/issues
+- **Email**: andrew.neal@ed.ac.uk
 - **Documentation**: See included documentation files
-- **DataShare**: [Link to dataset page]
+- **DataShare**: https://datashare.ed.ac.uk
 
 ## Dataset Versioning
 
-- **NSDDD v3** (2025): Fresh MPNet-based encodings, complete reorganisation
+- **NSDDD v3** (2026): Fresh MPNet-based encodings, complete reorganisation
 - **NSDDD v2** (2023): Previous version with USE-4 embeddings
 - **NSDDD v1** (2022): Initial release
 
-See `NSDDD_v3_LAUNCH_REPORT.md` (included after installation) for version comparison.
+See `WHATS_NEW_IN_NSDDD_V3.md` (included after installation) for complete version comparison and improvements.
 
 ## References
 
-**Semantic search methodology**: See `SEMANTIC_SEARCH_GUIDE.md` (included)
+**Complete documentation**: See `WHATS_NEW_IN_NSDDD_V3.md` (included after installation)
 
-**Dataset inclusion criteria**: See `INCLUSION_CRITERIA.md` (included)
+**Dataset methodology**: See `dataset_inclusion_criteria.md` (included after installation)
 
-**Language audit**: See `LANGUAGE_AUDIT_REPORT.md` (included)
+**Citation formats**: See `CITATION.txt` (included after installation)
+
+**License**: See `LICENSE.txt` (included after installation)
 
 ---
 

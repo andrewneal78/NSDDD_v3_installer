@@ -34,52 +34,84 @@ DOWNLOADS = {
         'required': True,
         'description': 'Metadata: document and country information'
     },
-    'documentation': {
-        'filename': 'documentation.zip',
-        'size_mb': 20,
-        'size_gb': 0.02,
+    'whats_new': {
+        'filename': 'WHATS_NEW_IN_NSDDD_V3.md',
+        'size_mb': 0.03,
+        'size_gb': 0.00003,
         'extract_to': 'documentation/',
         'required': True,
-        'description': 'Documentation: guides and methodology'
+        'description': 'Complete overview of v3 improvements and features'
+    },
+    'inclusion_criteria': {
+        'filename': 'dataset_inclusion_criteria.md',
+        'size_mb': 0.025,
+        'size_gb': 0.000025,
+        'extract_to': 'documentation/',
+        'required': True,
+        'description': 'Document selection criteria and methodology'
+    },
+    'readme': {
+        'filename': 'README.txt',
+        'size_mb': 0.007,
+        'size_gb': 0.000007,
+        'extract_to': 'documentation/',
+        'required': True,
+        'description': 'Quick start guide'
+    },
+    'citation': {
+        'filename': 'CITATION.txt',
+        'size_mb': 0.004,
+        'size_gb': 0.000004,
+        'extract_to': 'documentation/',
+        'required': True,
+        'description': 'Citation formats for research use'
+    },
+    'license': {
+        'filename': 'LICENSE.txt',
+        'size_mb': 0.006,
+        'size_gb': 0.000006,
+        'extract_to': 'documentation/',
+        'required': True,
+        'description': 'CC BY 4.0 license terms'
     },
 
     # OPTIONAL downloads (user chooses which to download)
     'clean_text_documents': {
         'filename': 'clean_text_documents_English_and_translated.zip',
-        'size_mb': 40,
-        'size_gb': 0.04,
+        'size_mb': 41,
+        'size_gb': 0.041,
         'extract_to': 'documents/',
         'optional': True,
         'description': '660 plain text documents (English + translated)'
     },
     'spacy_documents': {
         'filename': 'spacy_documents.zip',
-        'size_mb': 50,
-        'size_gb': 0.05,
+        'size_mb': 44,
+        'size_gb': 0.044,
         'extract_to': 'documents/',
         'optional': True,
         'description': '660 sentence-segmented documents'
     },
     'pdf_originals': {
         'filename': 'pdf_originals.zip',
-        'size_mb': 6000,
-        'size_gb': 6.0,
+        'size_mb': 7000,
+        'size_gb': 7.0,
         'extract_to': 'documents/',
         'optional': True,
         'description': '635 original PDFs organized by country (7.7GB uncompressed)'
     },
     'original_language_documents': {
         'filename': 'original_language_documents.zip',
-        'size_mb': 10,
-        'size_gb': 0.01,
+        'size_mb': 7.6,
+        'size_gb': 0.0076,
         'extract_to': 'documents/',
         'optional': True,
         'description': '128 original language plain text files'
     },
     'original_language_spacy': {
         'filename': 'original_language_spacy.zip',
-        'size_mb': 10,
-        'size_gb': 0.01,
+        'size_mb': 7.8,
+        'size_gb': 0.0078,
         'extract_to': 'documents/',
         'optional': True,
         'description': '129 original language sentence-segmented files'
@@ -119,9 +151,9 @@ RETRY_ATTEMPTS = 3
 TIMEOUT_SECONDS = 30
 
 # Dataset information
-DATASET_NAME = 'National Security Documents Dataset (NSDDD) Version 3'
+DATASET_NAME = 'National Security and Defence Documents Dataset (1987-2025) v3.0'
 DATASET_DOCUMENTS = 660
-DATASET_COUNTRIES = 119
+DATASET_COUNTRIES = 118
 DATASET_YEARS = '1987–2025'
 DATASET_SEGMENTS = 726307
 DATASET_ENCODING_DIM = 768
