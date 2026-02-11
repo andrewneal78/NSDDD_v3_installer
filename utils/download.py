@@ -121,15 +121,30 @@ def download_file(
     except ValueError:
         content_length = 0
 
-    # Use expected_size as fallback if Content-Length not available
-    if content_length == 0 and expected_size is not None:
-        content_length = expected_size - downloaded_size
+    # Determine the actual total file size
+    # When resuming, server may return full file size or remaining bytes in Content-Length
+    if expected_size is not None:
+        # Use expected_size as authoritative total
+        total_size = expected_size
+        if content_length == 0:
+            # If no Content-Length, estimate remaining bytes
+            remaining = max(0, expected_size - downloaded_size)
+    else:
+        # No expected_size, estimate from Content-Length
+        if content_length > 0:
+            # Server returned size; assume it's remaining (when resuming) or full (when starting)
+            if downloaded_size > 0 and content_length < downloaded_size:
+                # Clearly remaining bytes (resuming)
+                total_size = content_length + downloaded_size
+            else:
+                # Could be full file or remaining; estimate as full
+                total_size = max(content_length, content_length + downloaded_size)
+        else:
+            # No size information
+            total_size = 0
 
-    # If resuming, content-length is remaining bytes; total is remaining + downloaded
-    total_size = content_length + downloaded_size
-
-    # If no content-length and file exists, assume download is complete
-    if content_length == 0 and destination.exists():
+    # If no size info and file exists, assume download is complete
+    if total_size == 0 and destination.exists():
         return destination
 
     # Download with progress callback
