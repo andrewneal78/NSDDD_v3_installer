@@ -122,9 +122,21 @@ def download_file(
             headers = {}
 
             if destination.exists() and resume:
-                downloaded_size = destination.stat().st_size
-                headers['Range'] = f'bytes={downloaded_size}-'
-                mode = 'ab'
+                existing_size = destination.stat().st_size
+
+                # Check if existing file is larger than expected (corrupted download)
+                if expected_size is not None and existing_size > expected_size:
+                    print(f'\n  ⚠ Existing file is larger than expected ({existing_size / (1024**2):.0f} MB > {expected_size / (1024**2):.0f} MB)')
+                    print(f'  ⚠ File may be corrupted from previous attempt')
+                    print(f'  ⊗ Deleting corrupted file and starting fresh...\n')
+                    destination.unlink()
+                    downloaded_size = 0
+                    headers = {}
+                    mode = 'wb'
+                else:
+                    downloaded_size = existing_size
+                    headers['Range'] = f'bytes={downloaded_size}-'
+                    mode = 'ab'
             else:
                 mode = 'wb'
 
