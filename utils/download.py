@@ -48,9 +48,10 @@ def download_file(
     destination: str,
     resume: bool = True,
     chunk_size: int = 8192,
-    timeout: int = 30,
+    timeout: int = 300,
     progress_callback: Optional[Callable] = None,
-    expected_size: Optional[int] = None
+    expected_size: Optional[int] = None,
+    max_retries: int = 3
 ) -> Path:
     """
     Download file with progress bar and resume capability.
@@ -60,43 +61,58 @@ def download_file(
         destination: Local file path to save to
         resume: If True, resume partial downloads. If False, overwrite.
         chunk_size: Bytes per chunk (default 8KB)
-        timeout: Request timeout in seconds
+        timeout: Request timeout in seconds (default 300s / 5 minutes)
         progress_callback: Optional callback function(bytes_downloaded, total_bytes)
         expected_size: Expected file size in bytes (used as fallback if Content-Length unavailable)
+        max_retries: Maximum number of retries for transient failures
 
     Returns:
         Path object for downloaded file
 
     Raises:
-        requests.RequestException: If download fails
+        requests.RequestException: If download fails after retries
         IOError: If file writing fails
     """
     destination = Path(destination)
     destination.parent.mkdir(parents=True, exist_ok=True)
 
-    # Check for partial download
-    downloaded_size = 0
-    headers = {}
+    # Retry loop for transient failures
+    last_error = None
+    for attempt in range(max_retries):
+        try:
+            # Check for partial download
+            downloaded_size = 0
+            headers = {}
 
-    if destination.exists() and resume:
-        downloaded_size = destination.stat().st_size
-        headers['Range'] = f'bytes={downloaded_size}-'
-        mode = 'ab'
-    else:
-        mode = 'wb'
+            if destination.exists() and resume:
+                downloaded_size = destination.stat().st_size
+                headers['Range'] = f'bytes={downloaded_size}-'
+                mode = 'ab'
+            else:
+                mode = 'wb'
 
-    # Make request
-    try:
-        response = requests.get(
-            url,
-            headers=headers,
-            stream=True,
-            timeout=timeout,
-            allow_redirects=True
-        )
-        response.raise_for_status()
-    except requests.RequestException as e:
-        raise requests.RequestException(f'Failed to connect to {url}: {e}')
+            # Make request
+            response = requests.get(
+                url,
+                headers=headers,
+                stream=True,
+                timeout=timeout,
+                allow_redirects=True
+            )
+            response.raise_for_status()
+            break  # Success, exit retry loop
+
+        except (requests.ConnectionError, requests.Timeout) as e:
+            last_error = e
+            if attempt < max_retries - 1:
+                wait_time = (attempt + 1) * 5  # 5s, 10s, 15s backoff
+                print(f'  ⚠ Connection timeout, retrying in {wait_time}s (attempt {attempt + 1}/{max_retries})...')
+                time.sleep(wait_time)
+                continue
+            else:
+                raise requests.RequestException(f'Failed to connect to {url} after {max_retries} attempts: {e}')
+        except requests.RequestException as e:
+            raise requests.RequestException(f'Failed to connect to {url}: {e}')
 
     # Get total size from Content-Length header or use expected_size
     content_length = response.headers.get('content-length', '0')
@@ -130,6 +146,12 @@ def download_file(
                     if progress_callback:
                         progress_callback(bytes_downloaded, total_size)
 
+    except (requests.ConnectionError, requests.Timeout) as e:
+        # Transient network error during download - file can be resumed
+        print(f'\n  ⚠ Download interrupted: {type(e).__name__}')
+        print(f'  Downloaded {bytes_downloaded / (1024**2):.0f} MB so far')
+        print(f'  Restart this cell to resume from where it stopped.')
+        raise requests.RequestException(f'Download interrupted after {bytes_downloaded / (1024**2):.0f} MB: {e}')
     except IOError as e:
         raise IOError(f'Failed to write to {destination}: {e}')
 
