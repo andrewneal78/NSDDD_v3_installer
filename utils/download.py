@@ -213,8 +213,21 @@ def download_file(
                     f.write(chunk)
                     bytes_downloaded += len(chunk)
 
+                    # Detect if we're receiving more data than expected
+                    if total_size > 0 and bytes_downloaded > total_size:
+                        print(f'\n  ✗ ERROR: Received more data than expected!')
+                        print(f'  Downloaded: {bytes_downloaded / (1024**2):.0f} MB')
+                        print(f'  Expected: {total_size / (1024**2):.0f} MB')
+                        print(f'  This indicates a server issue or corrupted download.')
+                        print(f'  Deleting corrupted file...\n')
+                        f.close()
+                        destination.unlink()
+                        raise IOError(f'Download exceeded expected size: {bytes_downloaded} > {total_size}')
+
                     if progress_callback:
-                        progress_callback(bytes_downloaded, total_size)
+                        # Cap progress at 100% for display purposes
+                        display_downloaded = min(bytes_downloaded, total_size) if total_size > 0 else bytes_downloaded
+                        progress_callback(display_downloaded, total_size)
 
     except (requests.ConnectionError, requests.Timeout) as e:
         # Transient network error during download - file can be resumed
