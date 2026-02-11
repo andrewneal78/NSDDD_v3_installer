@@ -76,7 +76,7 @@ DOWNLOADS = {
     },
 
     # OPTIONAL downloads (user chooses which to download)
-    'clean_text_documents': {
+    'clean_text': {
         'filename': 'clean_text_documents_English_and_translated.zip',
         'size_mb': 41,
         'size_gb': 0.041,
@@ -84,7 +84,7 @@ DOWNLOADS = {
         'optional': True,
         'description': '660 plain text documents (English + translated)'
     },
-    'spacy_documents': {
+    'spacy': {
         'filename': 'spacy_documents.zip',
         'size_mb': 44,
         'size_gb': 0.044,
@@ -100,18 +100,18 @@ DOWNLOADS = {
         'optional': True,
         'description': '635 original PDFs organized by country (7.7GB uncompressed)'
     },
-    'original_language_documents': {
+    'original_language': {
         'filename': 'original_language_documents.zip',
-        'size_mb': 7.6,
-        'size_gb': 0.0076,
+        'size_mb': 8,
+        'size_gb': 0.008,
         'extract_to': 'documents/',
         'optional': True,
         'description': '128 original language plain text files'
     },
     'original_language_spacy': {
         'filename': 'original_language_spacy.zip',
-        'size_mb': 7.8,
-        'size_gb': 0.0078,
+        'size_mb': 8,
+        'size_gb': 0.008,
         'extract_to': 'documents/',
         'optional': True,
         'description': '129 original language sentence-segmented files'
