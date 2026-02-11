@@ -42,7 +42,7 @@ class DataShareClient:
         Get item metadata from DataShare using handle lookup.
 
         Returns:
-            Dictionary with item metadata including ID, title, description
+            Dictionary with item metadata including UUID, title, description
 
         Raises:
             requests.RequestException: If API request fails
@@ -53,22 +53,22 @@ class DataShareClient:
         response.raise_for_status()
 
         data = response.json()
-        if not data or 'id' not in data:
+        if not data or 'uuid' not in data:
             raise ValueError(f'Handle {self.handle} not found or invalid')
 
-        self._item_id = data['id']
+        self._item_id = data['uuid']
         return data
 
-    def _get_item_id(self) -> int:
+    def _get_item_id(self) -> str:
         """
-        Get item ID from handle (with caching).
+        Get item UUID from handle (with caching).
 
         Returns:
-            Item ID as integer
+            Item UUID as string
         """
         if self._item_id is None:
             metadata = self.get_item_metadata()
-            self._item_id = metadata['id']
+            self._item_id = metadata['uuid']
         return self._item_id
 
     def list_bitstreams(self) -> List[Dict]:
@@ -92,17 +92,17 @@ class DataShareClient:
         response.raise_for_status()
         return response.json()
 
-    def get_download_url(self, bitstream_id: int) -> str:
+    def get_download_url(self, bitstream_uuid: str) -> str:
         """
         Construct download URL for a bitstream.
 
         Args:
-            bitstream_id: ID of the bitstream to download
+            bitstream_uuid: UUID of the bitstream to download
 
         Returns:
             Full download URL
         """
-        return f'{self.api_base}/bitstreams/{bitstream_id}/retrieve'
+        return f'{self.api_base}/bitstreams/{bitstream_uuid}/retrieve'
 
     def find_file_by_name(self, filename: str) -> Dict:
         """
@@ -141,13 +141,13 @@ class DataShareClient:
             - size_bytes: Size in bytes
             - size_mb: Size in MB
             - size_gb: Size in GB
-            - id: Bitstream ID
+            - uuid: Bitstream UUID
             - download_url: Full download URL
-            - checksum: SHA-256 checksum if available
+            - checksum: MD5 checksum if available
         """
         bitstream = self.find_file_by_name(filename)
 
-        size_bytes = bitstream.get('size', 0)
+        size_bytes = bitstream.get('sizeBytes', 0)
         size_mb = size_bytes / (1024 ** 2)
         size_gb = size_bytes / (1024 ** 3)
 
@@ -156,9 +156,9 @@ class DataShareClient:
             'size_bytes': size_bytes,
             'size_mb': round(size_mb, 2),
             'size_gb': round(size_gb, 2),
-            'id': bitstream.get('id'),
-            'download_url': self.get_download_url(bitstream.get('id')),
-            'checksum': bitstream.get('checksum', {}).get('value', 'N/A'),
+            'uuid': bitstream.get('uuid'),
+            'download_url': self.get_download_url(bitstream.get('uuid')),
+            'checksum': bitstream.get('checkSum', {}).get('value', 'N/A'),
             'mime_type': bitstream.get('mimeType')
         }
 
@@ -194,7 +194,7 @@ class DataShareClient:
         """
         bitstreams = self.list_bitstreams()
 
-        total_size_bytes = sum(b.get('size', 0) for b in bitstreams)
+        total_size_bytes = sum(b.get('sizeBytes', 0) for b in bitstreams)
         total_size_gb = total_size_bytes / (1024 ** 3)
 
         return {
