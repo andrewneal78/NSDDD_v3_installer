@@ -49,7 +49,8 @@ def download_file(
     resume: bool = True,
     chunk_size: int = 8192,
     timeout: int = 30,
-    progress_callback: Optional[Callable] = None
+    progress_callback: Optional[Callable] = None,
+    expected_size: Optional[int] = None
 ) -> Path:
     """
     Download file with progress bar and resume capability.
@@ -61,6 +62,7 @@ def download_file(
         chunk_size: Bytes per chunk (default 8KB)
         timeout: Request timeout in seconds
         progress_callback: Optional callback function(bytes_downloaded, total_bytes)
+        expected_size: Expected file size in bytes (used as fallback if Content-Length unavailable)
 
     Returns:
         Path object for downloaded file
@@ -96,11 +98,23 @@ def download_file(
     except requests.RequestException as e:
         raise requests.RequestException(f'Failed to connect to {url}: {e}')
 
-    # Get total size
-    total_size = int(response.headers.get('content-length', 0))
-    if total_size == 0 and destination.exists():
+    # Get total size from Content-Length header or use expected_size
+    content_length = response.headers.get('content-length', '0')
+    try:
+        content_length = int(content_length)
+    except ValueError:
+        content_length = 0
+
+    # Use expected_size as fallback if Content-Length not available
+    if content_length == 0 and expected_size is not None:
+        content_length = expected_size - downloaded_size
+
+    # If resuming, content-length is remaining bytes; total is remaining + downloaded
+    total_size = content_length + downloaded_size
+
+    # If no content-length and file exists, assume download is complete
+    if content_length == 0 and destination.exists():
         return destination
-    total_size += downloaded_size
 
     # Download with progress callback
     start_time = time.time()
