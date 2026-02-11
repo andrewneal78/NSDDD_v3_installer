@@ -5,10 +5,44 @@ Provides file download with progress tracking, resume capability, and error hand
 """
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 import os
 from pathlib import Path
 from typing import Callable, Optional
 import time
+
+
+def create_download_session(timeout: int = 300) -> requests.Session:
+    """
+    Create a requests session with proper timeout and retry configuration.
+
+    Args:
+        timeout: Timeout in seconds for connections and reads
+
+    Returns:
+        Configured requests.Session with retry strategy
+    """
+    session = requests.Session()
+
+    # Create retry strategy for transient failures
+    # Don't retry on the session level - we handle retries in download_file
+    retry_strategy = Retry(
+        total=0,  # We handle retries at function level
+        backoff_factor=0,
+        status_forcelist=[]
+    )
+
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
+
+    # Set reasonable defaults
+    session.headers.update({
+        'User-Agent': 'NSDDD-v3-Installer/1.0'
+    })
+
+    return session
 
 
 def calculate_total_size(downloads_dict: dict, selected_keys: list) -> dict:
@@ -76,6 +110,9 @@ def download_file(
     destination = Path(destination)
     destination.parent.mkdir(parents=True, exist_ok=True)
 
+    # Create session with proper timeout configuration
+    session = create_download_session(timeout)
+
     # Retry loop for transient failures
     last_error = None
     for attempt in range(max_retries):
@@ -91,12 +128,13 @@ def download_file(
             else:
                 mode = 'wb'
 
-            # Make request
-            response = requests.get(
+            # Make request with explicit timeout tuple (connection, read)
+            # This ensures both connection and read operations respect the timeout
+            response = session.get(
                 url,
                 headers=headers,
                 stream=True,
-                timeout=timeout,
+                timeout=(timeout, timeout),  # (connection_timeout, read_timeout)
                 allow_redirects=True
             )
             response.raise_for_status()
@@ -113,6 +151,11 @@ def download_file(
                 raise requests.RequestException(f'Failed to connect to {url} after {max_retries} attempts: {e}')
         except requests.RequestException as e:
             raise requests.RequestException(f'Failed to connect to {url}: {e}')
+        finally:
+            # Close session on each retry to ensure clean state
+            if attempt < max_retries - 1:
+                session.close()
+                session = create_download_session(timeout)
 
     # Get total size from Content-Length header or use expected_size
     content_length = response.headers.get('content-length', '0')
@@ -168,7 +211,11 @@ def download_file(
         print(f'  Restart this cell to resume from where it stopped.')
         raise requests.RequestException(f'Download interrupted after {bytes_downloaded / (1024**2):.0f} MB: {e}')
     except IOError as e:
+        session.close()
         raise IOError(f'Failed to write to {destination}: {e}')
+    finally:
+        # Always close the session
+        session.close()
 
     elapsed = time.time() - start_time
     speed_mbps = (bytes_downloaded / (1024 ** 2)) / elapsed if elapsed > 0 else 0
