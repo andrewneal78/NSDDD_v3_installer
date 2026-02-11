@@ -8,9 +8,9 @@ the National Security Documents Dataset (NSDDD) version 3 from Edinburgh DataSha
 # DataShare API endpoints
 DATASHARE_API_BASE = 'https://datashare.ed.ac.uk/rest'
 
-# DataShare handle (to be filled after dataset publication)
-# Format: 10283/XXXXX
-DATASHARE_HANDLE = '10283/[HANDLE_TO_BE_ADDED]'
+# DataShare handle for NSDDD v3
+# https://datashare.ed.ac.uk/handle/10283/9156
+DATASHARE_HANDLE = '10283/9156'
 
 # Construct base URL for files
 DATASHARE_ITEM_URL = f'{DATASHARE_API_BASE}/handle/{DATASHARE_HANDLE}'
@@ -20,8 +20,8 @@ DOWNLOADS = {
     # REQUIRED downloads (essential for semantic search)
     'model_files': {
         'filename': 'model_files.zip',
-        'size_mb': 4700,
-        'size_gb': 4.7,
+        'size_mb': 4665,
+        'size_gb': 4.665,
         'extract_to': 'model/',
         'required': True,
         'description': 'Model files: MPNet embeddings and segment data (11.5GB uncompressed)'
@@ -94,8 +94,8 @@ DOWNLOADS = {
     },
     'pdf_originals': {
         'filename': 'pdf_originals.zip',
-        'size_mb': 7000,
-        'size_gb': 7.0,
+        'size_mb': 6959,
+        'size_gb': 6.959,
         'extract_to': 'documents/',
         'optional': True,
         'description': '635 original PDFs organized by country (7.7GB uncompressed)'
