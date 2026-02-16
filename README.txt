@@ -293,7 +293,7 @@ If you use NSDDD v3 in research, please cite:
 
   Neal, A. W., & Gardner, R. B. (2026). National Security and Defence
   Documents Dataset (1987-2025) v3.0. University of Edinburgh.
-  Edinburgh DataShare. https://datashare.ed.ac.uk
+  Edinburgh DataShare. https://datashare.ed.ac.uk/handle/10283/9156
 
 BibTeX:
 
@@ -303,7 +303,8 @@ BibTeX:
                    (1987-2025) v3.0},
     year        = {2026},
     publisher   = {Edinburgh DataShare},
-    institution = {University of Edinburgh}
+    institution = {University of Edinburgh},
+    url         = {https://datashare.ed.ac.uk/handle/10283/9156}
   }
 
 
