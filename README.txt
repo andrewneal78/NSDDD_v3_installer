@@ -207,6 +207,22 @@ Temporal analysis:
 
 
 ------------------------------------------------------------------------
+RUNNING THE SEARCH INTERFACE
+------------------------------------------------------------------------
+
+Once installed, you can launch the document search interface as a
+standalone app — no Jupyter cells visible:
+
+    python launch.py
+
+This opens a browser window with the full search interface.
+You can also open document_metadata_search.ipynb directly in Jupyter
+as before.
+
+To stop the server, press Ctrl+C in the terminal.
+
+
+------------------------------------------------------------------------
 DISK SPACE BREAKDOWN
 ------------------------------------------------------------------------
 
