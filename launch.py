@@ -13,10 +13,11 @@ import webbrowser
 import threading
 import time
 import sys
+from pathlib import Path
 
 HOST = "localhost"
 PORT = 8866
-NOTEBOOK = "document_metadata_search.ipynb"
+NOTEBOOK = Path(__file__).resolve().parent / "document_metadata_search.ipynb"
 URL = f"http://{HOST}:{PORT}"
 BROWSER_DELAY = 3  # seconds to wait for the Voilà server to start before opening the browser
 
@@ -37,17 +38,17 @@ def main():
     threading.Thread(target=open_browser, daemon=True).start()
 
     try:
-        subprocess.run([
+        result = subprocess.run([
             sys.executable, "-m", "voila",
-            NOTEBOOK,
+            str(NOTEBOOK),
             f"--port={PORT}",
             "--no-browser",
-            "--Voila.ip=localhost"
+            f"--Voila.ip={HOST}"
         ])
-    except FileNotFoundError:
-        print("\nError: Voilà is not installed.")
-        print("Install it with:  pip install voila")
-        sys.exit(1)
+        if result.returncode != 0:
+            print("\nError: Voilà failed to start.")
+            print("If Voilà is not installed, run:  pip install voila")
+            sys.exit(result.returncode)
     except KeyboardInterrupt:
         print("\n\nServer stopped. Goodbye!")
 
