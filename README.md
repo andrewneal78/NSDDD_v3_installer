@@ -129,6 +129,12 @@ jupyter notebook document_metadata_search.ipynb
 
 This is the same interface without the browser launcher. Use it if you want to modify the search logic, access results programmatically, or integrate with other notebooks.
 
+To verify your installation or diagnose issues, run:
+
+```bash
+jupyter notebook VERIFY.ipynb
+```
+
 ---
 
 ## Citation
