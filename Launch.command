@@ -1,9 +1,4 @@
 #!/bin/bash
-# NSDDD v3 — Mac launcher
-# Double-click this file to start the search interface.
-# The terminal window will close automatically once the browser opens.
-#
-# One-time setup: chmod +x Launch.command
 cd "$(dirname "$0")"
 
 # Resolve Python: prefer install_config.json, then local .venv, then system python3
@@ -20,4 +15,24 @@ if [ -z "$PYTHON" ] || [ ! -f "$PYTHON" ]; then
     fi
 fi
 
-"$PYTHON" launch.py --detach
+# Kill any existing instance on this port
+lsof -ti tcp:8866 | xargs kill -TERM 2>/dev/null
+sleep 1
+
+echo "================================================"
+echo "  NSDDD v3 Search Interface"
+echo "  http://127.0.0.1:8866"
+echo "  Close this window to stop the server."
+echo "================================================"
+echo ""
+
+# Open browser after 3 seconds (background)
+(sleep 3 && open "http://127.0.0.1:8866") &
+
+# Run Voilà in foreground — closing this window stops the server
+"$PYTHON" -m voila document_metadata_search_voila.ipynb \
+    --port=8866 \
+    --Voila.ip=127.0.0.1 \
+    --no-browser \
+    --strip_sources=True \
+    --progressive_rendering=True
