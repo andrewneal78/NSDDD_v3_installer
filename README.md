@@ -43,7 +43,7 @@ Click the green **Code** button on this page, then **Download ZIP**. Extract the
 
 ### Step 2 — Open a terminal in that folder
 
-- **Mac:** right-click the `NSDDD_v3_installer` folder → **Services** → **New Terminal at Folder**
+- **Mac:** press `Cmd + Space`, type `Terminal`, press Enter — then type `cd ` (with a space), drag the `NSDDD_v3_installer` folder into the Terminal window, and press Enter
 - **Windows:** open the `NSDDD_v3_installer` folder in File Explorer, click the address bar at the top, type `cmd`, press Enter
 
 ---
