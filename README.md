@@ -72,9 +72,34 @@ The installer will walk you through:
 | **Windows** | Double-click `Launch.vbs` in the installer folder |
 | **Terminal** | `python3 launch.py` |
 
-Your browser opens at `http://localhost:8866`. The search interface loads automatically.
+Your browser opens at `http://localhost:8867`. The search interface loads automatically.
 
-> **First load takes around a minute** while the model initialises — a loading message appears in the browser while this happens.
+> On startup, the launcher checks for installer updates before opening the interface.
+
+> The browser may briefly show “server not found” for a few seconds while Voilà starts.
+
+---
+
+## Automatic updates
+
+The launcher checks for updates each time you start:
+
+- **Git installs (cloned repo):** `git fetch` + fast-forward pull from `origin/main` when newer.
+- **Download/ZIP installs:** compares local `VERSION` with GitHub `VERSION`; if newer, downloads and overlays latest installer files while preserving local data folders (`NSDDD_v3_workspace`, `outputs`, `.venv`, etc.).
+
+After applying an update, the launcher restarts automatically.
+
+Disable auto-update for a single run:
+
+```bash
+python3 launch.py --no-update
+```
+
+Disable auto-update via environment variable:
+
+```bash
+NSDDD_AUTO_UPDATE=0 python3 launch.py
+```
 
 ---
 
@@ -162,10 +187,10 @@ If you use NSDDD v3 in research, please cite:
 Install Python 3.9+ from https://www.python.org/downloads/ (tick "Add to PATH" on Windows).
 
 **Loading message doesn't clear / interface doesn't appear**
-Wait up to a minute on first load. If it still doesn't appear, close the browser tab, wait 10 seconds, and reopen `http://localhost:8866`.
+Wait briefly after launch. The server can take a few seconds to start. If needed, close the tab, wait 10 seconds, and reopen `http://localhost:8867`.
 
 **Multiple browser tabs open / interface freezes**
-Each launch starts a fresh server; old sessions are stopped automatically. If you experience freezing, close all browser tabs, wait 10 seconds, and reopen `http://localhost:8866`.
+Each launch starts a fresh server; old sessions are stopped automatically. If you experience freezing, close all browser tabs, wait 10 seconds, and reopen `http://localhost:8867`.
 
 **FileNotFoundError during installation**
 Check your internet connection. Re-run `python3 install.py` — downloads resume automatically.
