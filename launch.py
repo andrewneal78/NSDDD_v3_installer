@@ -285,6 +285,8 @@ def main():
     print("NSDDD Search Interface")
     print(f"  URL : {URL}")
     print("  Stop: Ctrl+C")
+    print("  Note: browser may show 'server not found' for a few seconds.")
+    print("  Please be patient and refresh once the server is ready.")
     print()
 
     try:
