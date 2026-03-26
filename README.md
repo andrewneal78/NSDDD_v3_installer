@@ -135,7 +135,7 @@ The browser-based interface provides:
 | Documents | 660 |
 | Countries | 118 |
 | Coverage | 1987–2025 |
-| Segments | 726,307 paragraph-level |
+| Segments | 726,307 sentence-level |
 | Embedding model | `all-mpnet-base-v2` (768-dimensional) |
 | Languages | English + translations for 80+ countries |
 | DataShare | https://datashare.ed.ac.uk/handle/10283/9156 |
