@@ -19,7 +19,7 @@ echo "================================================"
 echo "  NSDDD v3 Search Interface"
 echo "  Checking for updates, then launching..."
 echo "  Note: browser may show 'server not found' briefly."
-echo "  Please wait a few seconds and refresh."
+echo "  Please wait a few seconds."
 echo "================================================"
 echo ""
 
