@@ -321,6 +321,35 @@ def _write_install_config(install_path: Path, python_path: Path):
         json.dump(config, f, indent=2)
 
 
+def _cleanup_stale_archives(downloads_dir: Path):
+    """
+    Remove leftover ZIP archives from downloads directory.
+
+    Extraction already removes ZIP files on success, but older installer runs
+    may have left archives behind. This pass keeps workspace size predictable.
+    """
+    if not downloads_dir.exists():
+        return
+
+    removed = []
+    for spec in DOWNLOADS.values():
+        filename = spec.get('filename', '')
+        if not filename.endswith('.zip'):
+            continue
+        archive = downloads_dir / filename
+        if archive.exists():
+            try:
+                archive.unlink()
+                removed.append(filename)
+            except Exception:
+                pass
+
+    if removed:
+        print('  ✓ Cleaned leftover archives from downloads/:')
+        for name in removed:
+            print(f'    - {name}')
+
+
 # ---------------------------------------------------------------------------
 # Main installer flow
 # ---------------------------------------------------------------------------
@@ -448,6 +477,10 @@ def main():
                 print(f'    - {m}')
         else:
             print('  ✓ Core directories present')
+
+    print()
+    print('Cleaning installer download cache...')
+    _cleanup_stale_archives(downloads_dir)
 
     # Write config and make launcher executable
     _write_install_config(install_dir, venv_py)
