@@ -1,24 +1,25 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 
-# Kill any existing instance on this port
-lsof -ti tcp:8867 | xargs kill -TERM 2>/dev/null
-sleep 1
+# Resolve Python: prefer install_config.json, then local .venv, then system python3
+if [ -f "install_config.json" ]; then
+    PYTHON=$(python3 -c "import json; print(json.load(open('install_config.json')).get('python',''))" 2>/dev/null)
+fi
+if [ -z "$PYTHON" ] || [ ! -f "$PYTHON" ]; then
+    if [ -f ".venv/bin/python3" ]; then
+        PYTHON=".venv/bin/python3"
+    elif [ -f "$HOME/.venv/bin/python3" ]; then
+        PYTHON="$HOME/.venv/bin/python3"
+    else
+        PYTHON="python3"
+    fi
+fi
 
 echo "================================================"
-echo "  NSDDD Search Interface"
-echo "  http://127.0.0.1:8867"
-echo "  Close this window to stop the server."
+echo "  NSDDD v3 Search Interface"
+echo "  Checking for updates, then launching..."
 echo "================================================"
 echo ""
 
-# Open browser after 3 seconds (background)
-(sleep 3 && open "http://127.0.0.1:8867") &
-
-# Run Voilà in foreground — closing this window stops the server
-~/.venv/bin/python3 -m voila document_metadata_search_voila.ipynb \
-    --port=8867 \
-    --Voila.ip=127.0.0.1 \
-    --no-browser \
-    --strip_sources=True \
-    --progressive_rendering=True
+# launch.py handles update checks and starts/stops Voilà
+"$PYTHON" launch.py
