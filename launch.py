@@ -15,6 +15,7 @@ import signal
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 import urllib.request
 import zipfile
@@ -251,6 +252,21 @@ def build_voila_command(py: str) -> list[str]:
     ]
 
 
+def open_browser_delayed(url: str, delay_seconds: float = 3.0):
+    """Open the browser after a short delay without blocking server startup."""
+    import webbrowser
+
+    def _open():
+        try:
+            webbrowser.open(url)
+        except Exception:
+            pass
+
+    timer = threading.Timer(delay_seconds, _open)
+    timer.daemon = True
+    timer.start()
+
+
 def main():
     parser = argparse.ArgumentParser(description="Launch NSDDD search interface")
     parser.add_argument("--detach", action="store_true", help="Start in background, open browser, then exit")
@@ -276,18 +292,17 @@ def main():
             stderr=subprocess.DEVNULL,
         )
         print(f"Starting NSDDD search interface... (PID {proc.pid})")
-        time.sleep(3)
-        import webbrowser
-
-        webbrowser.open(URL)
+        open_browser_delayed(URL, delay_seconds=3.0)
         sys.exit(0)
 
     print("NSDDD Search Interface")
     print(f"  URL : {URL}")
     print("  Stop: Ctrl+C")
     print("  Note: browser may show 'server not found' for a few seconds.")
-    print("  Please be patient and refresh once the server is ready.")
+    print("  Please be patient and wait for the server to be ready.")
     print()
+
+    open_browser_delayed(URL, delay_seconds=3.0)
 
     try:
         subprocess.run(cmd, cwd=str(cwd))
